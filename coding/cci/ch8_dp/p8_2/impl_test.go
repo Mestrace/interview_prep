@@ -7,7 +7,7 @@ import (
 )
 
 var _ = Describe("Impl", func() {
-	Context("DFS", func() {
+	Context("Robot in a grid - DFS", func() {
 		It("should work", func() {
 			grid := [][]uint8{
 				{0, 0, 0},
@@ -51,18 +51,76 @@ var _ = Describe("Impl", func() {
 			Expect(path).To(Equal([][]int(nil)))
 		})
 	})
+
+	Context("Unique paths", func() {
+		It("should work without obstacles", func() {
+			grid := [][]uint8{
+				{0, 0, 0},
+				{0, 0, 0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(3))
+		})
+
+		It("should work with 1 obstacles", func() {
+			grid := [][]uint8{
+				{0, 1, 0},
+				{0, 0, 0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(1))
+		})
+
+		It("should work with no path at all", func() {
+			grid := [][]uint8{
+				{0, 1, 0},
+				{0, 1, 0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(0))
+		})
+
+		It("should work on one column without obstacles", func() {
+			grid := [][]uint8{
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+				{0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(1))
+		})
+
+		It("should work on one column without 1 obstacles", func() {
+			grid := [][]uint8{
+				{0},
+				{0},
+				{0},
+				{1},
+				{0},
+				{0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(0))
+		})
+
+		It("should work on one row with no obstacles", func() {
+			grid := [][]uint8{
+				{0, 0, 0, 0, 0, 0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(1))
+		})
+
+		It("should work on one row with no obstacles", func() {
+			grid := [][]uint8{
+				{0, 0, 1, 0, 0, 0},
+			}
+
+			Expect(impl.UniquePathDP(grid)).To(Equal(0))
+		})
+
+	})
 })
-
-func Grid(i, j uint) (grid [][]uint8) {
-	grid = make([][]uint8, j)
-
-	for idx := range grid {
-		grid[idx] = make([]uint8, i)
-	}
-
-	return
-}
-
-func PlaceObstacles(grid [][]uint8, i, j uint) {
-	grid[j][i] = 1
-}
