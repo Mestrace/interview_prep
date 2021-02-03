@@ -12,6 +12,8 @@ Thought 1: binary search
 */
 package p8_3
 
+import "fmt"
+
 // MagicIndexBinarySearch finds the magic index using binary search
 func MagicIndexBinarySearch(A []int) int {
 	if len(A) == 0 {
@@ -44,19 +46,29 @@ func MagicIndexBinarySearch(A []int) int {
 // edge of the array.
 // Return the leftmost pivot index. If no such index exists, return -1.
 
-// PivotIndexBruteForce solves LC 724
-func PivotIndexBruteForce(A []int) int {
-	leftsum := make([]int, len(A))
-	leftsum[0] = A[0]
-	for i := 1; i < len(A); i++ {
-		leftsum[i] = leftsum[i-1] + A[i]
+// PivotIndex solves LC 724
+func PivotIndex(A []int) int {
+	leftsum := make([]int, len(A)+1)
+	leftsum[1] = A[0]
+	for i := 2; i <= len(A); i++ {
+		leftsum[i] = leftsum[i-1] + A[i-1]
 	}
 
-	rightsum := make([]int, len(A))
-	rightsum[0] = A[len(A)-1]
+	rightsum := make([]int, len(A)+1)
+	rightsum[len(A)-1] = A[len(A)-1]
 	for i := len(A) - 2; i >= 0; i-- {
-		rightsum[len(A)-i-1] = rightsum[len(A)-i-2] + A[i]
+		rightsum[i] = rightsum[i+1] + A[i]
 	}
 
-	// TBF
+	fmt.Printf("%+v\n", A)
+	fmt.Printf("%+v\n", leftsum)
+	fmt.Printf("%+v\n", rightsum)
+
+	for i := range A {
+		if leftsum[i] == rightsum[i+1] {
+			return i
+		}
+	}
+
+	return -1
 }

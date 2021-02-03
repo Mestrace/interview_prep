@@ -27,4 +27,32 @@ var _ = Describe("Impl", func() {
 			Expect(result).To(Equal(-1))
 		})
 	})
+
+	Context("Pivot Index", func() {
+		It("should work", func() {
+			A := []int{-1, 10, -11}
+			result := impl.PivotIndex(A)
+			Expect(result).To(Equal(-1))
+		})
+
+		It("should work again", func() {
+			A := []int{-1, 10, 0, 9}
+			result := impl.PivotIndex(A)
+			Expect(result).To(Equal(2))
+		})
+
+		It("should find nothing", func() {
+			A := []int{-1, 10, 100}
+			result := impl.PivotIndex(A)
+			Expect(result).To(Equal(-1))
+		})
+
+		It("should find the left one", func() {
+			A := []int{-1, 0, 0, -1}
+			result := impl.PivotIndex(A)
+			Expect(result).To(Equal(1))
+		})
+
+	})
+
 })
