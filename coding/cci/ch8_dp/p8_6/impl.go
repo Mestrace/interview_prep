@@ -28,20 +28,28 @@ func (h Hanoi) Valid() bool {
 	return true
 }
 
-// Move moves the top one from tower i to j, and returns true if the move
-// can and was made
-func (h Hanoi) Move(i, j int) bool {
+func (h Hanoi) CanMove(i, j int) bool {
+	// Make sure i and j are within index of towers
 	if i >= len(h) || j >= len(h) {
 		return false
 	}
-
+	// Condition:
+	// 1. i-th tower must have elements
+	// 2. the element to be moved in i-th tower must have a smaller value than
+	//    the following element in j-th tower (or the j-th tower could be empty
+	//    to hold value)
 	if len(h[i]) != 0 && (len(h[j]) == 0 || h[i][len(h[i])-1] < h[j][len(h[j])-1]) {
-		v := h[i][len(h[i])-1]
-		h[i] = h[i][:len(h[i])-1]
-		h[j] = append(h[j], v)
 		return true
 	}
+
 	return false
+}
+
+// MakeMove moves the top one from tower i to j; must call h.CanMove before make moves
+func (h Hanoi) MakeMove(i, j int) {
+	v := h[i][len(h[i])-1]
+	h[i] = h[i][:len(h[i])-1]
+	h[j] = append(h[j], v)
 }
 
 // HasWinned defines the winning state
@@ -52,7 +60,10 @@ func (h Hanoi) HasWinned() bool {
 		}
 	}
 
-	return sort.IntsAreSorted(h[len(h)-1])
+	// is sorted on decreasing order?
+	return sort.SliceIsSorted(h[len(h)-1], func(i, j int) bool {
+		return h[len(h)-1][i] > h[len(h)-1][j]
+	})
 }
 
 // Copy returns a copy of current states
@@ -73,10 +84,42 @@ type move struct {
 	To    int
 }
 
-func (m move) AllMoves(h Hanoi) {
-	
+// func (m move) AllMoves(h Hanoi) []Hanoi {
+// 	result := make([]Hanoi, 0, factorial(len(h))*factorial(len(h)-2))
+// }
+
+func factorial(a int) int {
+	if a <= 0 {
+		panic("Negative number does no have factorial.")
+	} else if a == 0 {
+		return 0
+	} else if a == 1 {
+		return 1
+	}
+	return a * factorial(a-1)
 }
 
-func SolveHanoiBFS(h Hanoi) Hanoi {
-	stack := make([]move, 0)
+func Permutations(list []int) [][]int {
+	var perm func(p []int, l, r int) [][]int
+	perm = func(p []int, l, r int) [][]int {
+		if l == r {
+			// captures p and return
+			q := make([]int, len(p))
+			copy(q, p)
+			return [][]int{q}
+		}
+		result := make([][]int, 0, r-l)
+		for i := l; i <= r; i++ {
+			p[1], p[i] = p[i], p[1]
+			result = append(result, perm(p, l+1, r)...)
+			p[1], p[i] = p[i], p[1]
+		}
+		return result
+	}
+
+	return perm(list, 0, len(list)-1)
 }
+
+// func SolveHanoiBFS(h Hanoi) Hanoi {
+// 	stack := make([]move, 0)
+// }
