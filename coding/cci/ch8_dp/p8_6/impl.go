@@ -11,7 +11,9 @@ Write a program to move the disks from the first tower to the last using stacks.
 */
 package p8_6
 
-import "sort"
+import (
+	"sort"
+)
 
 // Hanoi is a Towers of Hanoi game
 type Hanoi [][]int
@@ -85,7 +87,19 @@ type move struct {
 }
 
 // func (m move) AllMoves(h Hanoi) []Hanoi {
-// 	result := make([]Hanoi, 0, factorial(len(h))*factorial(len(h)-2))
+// 	idxSet := make([]int, len(h))
+// 	for i := range h {
+// 		idxSet[i] = i
+// 	}
+
+// 	result := make([]Hanoi, 0, len(h))
+// 	for _, comb := range Combination(idxSet) {
+// 		result = append(result, move{
+// 			State: h.Copy(),
+// 			From: comb[0],
+// 			From:
+// 		})
+// 	}
 // }
 
 func factorial(a int) int {
@@ -99,20 +113,21 @@ func factorial(a int) int {
 	return a * factorial(a-1)
 }
 
-func Permutations(list []int) [][]int {
+// Permutation returns all permutations of the given set
+func Permutation(list []int) [][]int {
 	var perm func(p []int, l, r int) [][]int
 	perm = func(p []int, l, r int) [][]int {
 		if l == r {
-			// captures p and return
-			q := make([]int, len(p))
-			copy(q, p)
-			return [][]int{q}
+			return [][]int{p}
 		}
 		result := make([][]int, 0, r-l)
 		for i := l; i <= r; i++ {
-			p[1], p[i] = p[i], p[1]
-			result = append(result, perm(p, l+1, r)...)
-			p[1], p[i] = p[i], p[1]
+			p[l], p[i] = p[i], p[l]
+			// captures p and return
+			q := make([]int, len(p))
+			copy(q, p)
+			result = append(result, perm(q, l+1, r)...)
+			p[l], p[i] = p[i], p[l]
 		}
 		return result
 	}
