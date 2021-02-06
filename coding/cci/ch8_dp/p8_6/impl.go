@@ -12,8 +12,22 @@ Write a program to move the disks from the first tower to the last using stacks.
 package p8_6
 
 import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"hash"
 	"sort"
+
+	"github.com/twmb/murmur3"
 )
+
+var (
+	hasher hash.Hash64
+)
+
+func init() {
+	hasher = murmur3.New64()
+}
 
 // Hanoi is a Towers of Hanoi game
 type Hanoi [][]int
@@ -80,29 +94,61 @@ func (h Hanoi) Copy() Hanoi {
 	return result
 }
 
-type move struct {
-	State Hanoi
-	From  int
-	To    int
+type Move struct {
+	State       Hanoi
+	From        int
+	To          int
+	ParentState *Move
 }
 
-// func (m move) AllMoves(h Hanoi) []Hanoi {
-// 	idxSet := make([]int, len(h))
-// 	for i := range h {
-// 		idxSet[i] = i
-// 	}
+func (m Move) CanMove() bool {
+	return m.State.CanMove(m.From, m.To)
+}
 
-// 	result := make([]Hanoi, 0, len(h))
-// 	for _, comb := range Combination(idxSet) {
-// 		result = append(result, move{
-// 			State: h.Copy(),
-// 			From: comb[0],
-// 			From:
-// 		})
-// 	}
-// }
+func (m Move) MakeMove() {
+	m.State.MakeMove(m.From, m.To)
+}
 
-func factorial(a int) int {
+func (m Move) HasWinned() bool {
+	return m.State.HasWinned()
+}
+
+func (m Move) AllMoves() []Move {
+	idxSet := make([]int, len(m.State))
+	for i := range m.State {
+		idxSet[i] = i
+	}
+
+	result := make([]Move, 0, len(m.State))
+	for _, comb := range Combination(idxSet, 2) {
+		result = append(result, Move{
+			State:       m.State.Copy(),
+			From:        comb[0],
+			To:          comb[1],
+			ParentState: &m,
+		})
+	}
+	return result
+}
+
+func (m Move) Hash() uint64 {
+	var b bytes.Buffer
+	e := gob.NewEncoder(&b)
+	e.Encode(m.State)
+	e.Encode(m.From)
+	e.Encode(m.To)
+
+	hasher.Reset()
+
+	_, err := hasher.Write(b.Bytes())
+	if err != nil {
+		panic(err)
+	}
+	return hasher.Sum64()
+}
+
+// Factorial computes a!
+func Factorial(a int) int {
 	if a <= 0 {
 		panic("Negative number does no have factorial.")
 	} else if a == 0 {
@@ -110,11 +156,11 @@ func factorial(a int) int {
 	} else if a == 1 {
 		return 1
 	}
-	return a * factorial(a-1)
+	return a * Factorial(a-1)
 }
 
 // Permutation returns all permutations of the given set
-func Permutation(list []int) [][]int {
+func Permutation(set []int) [][]int {
 	var perm func(p []int, l, r int) [][]int
 	perm = func(p []int, l, r int) [][]int {
 		if l == r {
@@ -132,9 +178,92 @@ func Permutation(list []int) [][]int {
 		return result
 	}
 
-	return perm(list, 0, len(list)-1)
+	return perm(set, 0, len(set)-1)
 }
 
-// func SolveHanoiBFS(h Hanoi) Hanoi {
-// 	stack := make([]move, 0)
-// }
+// Combination returns all permutations of the given set
+func Combination(set []int, n int) [][]int {
+	var comb func(s []int, n int) (result [][]int)
+	comb = func(s []int, n int) (result [][]int) {
+		if n == 0 {
+			return
+		} else if n == 1 {
+			result = make([][]int, len(s))
+			for i, e := range s {
+				result[i] = []int{e}
+			}
+			return
+		}
+
+		for i := 0; i <= len(s)-n; i++ {
+			fixed, rest := s[i], s[i+1:]
+
+			for _, cr := range comb(rest, n-1) {
+				crc := make([]int, len(cr)+1)
+				copy(crc[1:], cr)
+				crc[0] = fixed
+				result = append(result, crc)
+			}
+		}
+
+		return result
+	}
+
+	return comb(set, n)
+}
+
+func SolveHanoiBFS(h Hanoi) (Move, error) {
+	set := make(map[uint64]Move, 100)
+	stack := make([]Move, 0, 100)
+
+	curMove := Move{State: h, From: -1, To: -1}
+
+	for _, m := range curMove.AllMoves() {
+		hash := m.Hash()
+		if _, ok := set[hash]; !ok {
+			stack = append(stack, m)
+		}
+	}
+
+	for len(stack) > 0 {
+		curMove, stack = stack[0], stack[1:]
+
+		if !curMove.CanMove() {
+			continue
+		}
+
+		curMove.MakeMove()
+
+		if curMove.HasWinned() {
+			return curMove, nil
+		}
+
+		for _, m := range curMove.AllMoves() {
+			hash := m.Hash()
+			if _, ok := set[hash]; !ok {
+				stack = append(stack, m)
+			}
+		}
+	}
+
+	if curMove.State.HasWinned() {
+		return curMove, nil
+	}
+	return curMove, fmt.Errorf("failed to solve")
+}
+
+// RecoverPath recovers the path as list in the correct order
+func RecoverPath(lastMove *Move) []Move {
+	result := make([]Move, 0, 10)
+
+	for lastMove != nil {
+		result = append(result, *lastMove)
+		lastMove = lastMove.ParentState
+	}
+
+	for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
+		result[i], result[j] = result[j], result[i]
+	}
+
+	return result
+}
