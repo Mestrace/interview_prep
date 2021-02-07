@@ -1,10 +1,10 @@
-package p8_6_test
+package p8_6x_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	impl "github.com/mestrace/interview_prep/coding/cci/ch8_dp/p8_6"
+	impl "github.com/mestrace/interview_prep/coding/cci/ch8_dp/p8_6x"
 )
 
 var _ = Describe("Impl", func() {

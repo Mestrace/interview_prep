@@ -9,7 +9,7 @@ even larger one). You have the following constraints:
   3. A disk cannot be placed on top of a smaller disk.
 Write a program to move the disks from the first tower to the last using stacks.
 */
-package p8_6
+package p8_6x
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package p8_6_test
+package p8_6x_test
 
 import (
 	"testing"
