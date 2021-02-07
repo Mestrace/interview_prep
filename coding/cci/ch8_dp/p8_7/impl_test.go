@@ -28,4 +28,35 @@ var _ = Describe("Impl", func() {
 			Expect(result).To(ContainElements("ABC", "ACB", "BAC", "BCA", "CAB", "CBA"))
 		})
 	})
+
+	Context("perm with dup", func() {
+		It("should perm 0", func() {
+			Expect(impl.PermutationsDups("")).To(HaveLen(0))
+		})
+		It("should perm 1", func() {
+			result := impl.PermutationsDups("C")
+			Expect(result).To(HaveLen(1))
+			Expect(result).To(ContainElements("C"))
+		})
+		It("should perm 1 with dup", func() {
+			result := impl.PermutationsDups("CCCCCCCCCCCC")
+			Expect(result).To(HaveLen(1))
+			Expect(result).To(ContainElements("C"))
+		})
+		It("should perm 2", func() {
+			result := impl.PermutationsDups("AC")
+			Expect(result).To(HaveLen(2))
+			Expect(result).To(ContainElements("AC", "CA"))
+		})
+		It("should perm 3", func() {
+			result := impl.PermutationsDups("ABC")
+			Expect(result).To(HaveLen(6))
+			Expect(result).To(ContainElements("ABC", "ACB", "BAC", "BCA", "CAB", "CBA"))
+		})
+		It("should perm 3 with dup", func() {
+			result := impl.PermutationsDups("ABBBBBCCCCCCCCCCC")
+			Expect(result).To(HaveLen(6))
+			Expect(result).To(ContainElements("ABC", "ACB", "BAC", "BCA", "CAB", "CBA"))
+		})
+	})
 })

@@ -25,3 +25,17 @@ func Permutations(str string) []string {
 
 	return perm(str, 0, len(str)-1)
 }
+
+func PermutationsDups(str string) []string {
+	srune := []rune(str)
+	urune := make([]rune, 0, len(srune))
+	trune := make(map[rune]struct{}, len(srune))
+	for _, r := range srune {
+		if _, ok := trune[r]; !ok {
+			trune[r] = struct{}{}
+			urune = append(urune, r)
+		}
+	}
+
+	return Permutations(string(urune))
+}
