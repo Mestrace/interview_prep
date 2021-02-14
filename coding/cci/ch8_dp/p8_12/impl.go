@@ -108,3 +108,42 @@ func (b EQBoard) Equal(ob EQBoard) bool {
 	return reflect.DeepEqual(b, ob)
 }
 
+// Point represents one point indexed by X and Y, possibly in a 2-D grid
+type Point struct {
+	X, Y int
+}
+
+// Box represents a box bounded by four corner indices, possibly in a 2-D grid
+type Box struct {
+	I, J, K, L int
+}
+
+// AdjPoints returns all the adjacent points a given defined box. This function
+// will not check for out-of-bound points, nor it works on undefined boxes.
+func (b Box) AdjPoints() []Point {
+	result := make([]Point, 0, 10)
+
+	for i := b.I - 1; i <= b.J; i++ {
+		result = append(result, Point{i, b.K - 1})
+	}
+	for k := b.K - 1; k <= b.L; k++ {
+		result = append(result, Point{b.J + 1, k})
+	}
+	for j := b.J + 1; j >= b.I; j-- {
+		result = append(result, Point{j, b.L + 1})
+	}
+	for l := b.L + 1; l >= b.K; l-- {
+		result = append(result, Point{b.I - 1, l})
+	}
+	return result
+}
+
+// func solveEightQueenDFS(b EQBoard, moveSeq []Point, box Box) (EQBoard, bool) {
+// 	// base case: if the bounding box Box{I, J, K, L} is larger than the size of
+// 	// the board, return the board and wheather the number of moves equals the
+// 	// size of the n-queen problem
+// 	if box.I < 0 || box.J >= len(b.Board[0]) || box.K < 0 || box.L >= len(b.Board) {
+// 		return b, len(moveSeq) == len(b.Board)
+// 	}
+
+// }

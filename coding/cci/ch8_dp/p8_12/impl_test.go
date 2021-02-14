@@ -39,6 +39,52 @@ var _ = Describe("Impl", func() {
 			MustPlaceQueen(b, 0, 3)
 		})
 	})
+	Context("Eight-Queen helper functions", func() {
+		It("should compute the adjacent points of a single point", func() {
+			b := impl.Box{4, 4, 4, 4}
+			result := b.AdjPoints()
+			Expect(result).To(HaveLen(8))
+			Expect(result).To(ContainElements(
+				impl.Point{3, 3},
+				impl.Point{3, 4},
+				impl.Point{3, 5},
+				impl.Point{4, 3},
+				impl.Point{4, 5},
+				impl.Point{5, 3},
+				impl.Point{5, 4},
+				impl.Point{5, 5},
+			))
+		})
+		It("should compute adjacent points of a box", func() {
+			b := impl.Box{5, 9, 7, 10}
+			result := b.AdjPoints()
+			Expect(result).To(HaveLen(22))
+			Expect(result).To(ContainElements(
+				impl.Point{4, 6},
+				impl.Point{5, 6},
+				impl.Point{6, 6},
+				impl.Point{7, 6},
+				impl.Point{8, 6},
+				impl.Point{9, 6},
+				impl.Point{10, 6},
+				impl.Point{10, 7},
+				impl.Point{10, 8},
+				impl.Point{10, 9},
+				impl.Point{10, 10},
+				impl.Point{10, 11},
+				impl.Point{9, 11},
+				impl.Point{8, 11},
+				impl.Point{7, 11},
+				impl.Point{6, 11},
+				impl.Point{5, 11},
+				impl.Point{4, 11},
+				impl.Point{4, 10},
+				impl.Point{4, 9},
+				impl.Point{4, 8},
+				impl.Point{4, 7},
+			))
+		})
+	})
 })
 
 func MustPlaceQueen(b impl.EQBoard, x, y int) {
