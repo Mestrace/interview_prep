@@ -9,6 +9,7 @@ import (
 
 var _ = Describe("Impl", func() {
 	Context("Eight-Queen basics", func() {
+		// CanPlaceQueen and PlaceQueen
 		It("should place 1 successfully", func() {
 			b := impl.NewEQBoard()
 			MustPlaceQueen(b, 7, 7)
@@ -31,13 +32,41 @@ var _ = Describe("Impl", func() {
 		It("should be place more successfully", func() {
 			b := impl.NewEQBoard()
 			MustPlaceQueen(b, 7, 7)
-			Expect(b.CanPlaceQueen(5, 6)).To(BeTrue())
 			MustPlaceQueen(b, 5, 6)
-			Expect(b.CanPlaceQueen(6, 4)).To(BeTrue())
 			MustPlaceQueen(b, 6, 4)
-			Expect(b.CanPlaceQueen(0, 3)).To(BeTrue())
 			MustPlaceQueen(b, 0, 3)
 		})
+
+		It("should undo all place queen", func() {
+			b := impl.NewEQBoard()
+			MustPlaceQueen(b, 7, 7)
+			MustPlaceQueen(b, 5, 6)
+			MustPlaceQueen(b, 6, 4)
+			MustPlaceQueen(b, 0, 3)
+
+			b.UndoPlaceQueen(6, 4)
+			b.UndoPlaceQueen(7, 7)
+			b.UndoPlaceQueen(5, 6)
+			b.UndoPlaceQueen(0, 3)
+			Expect(b).To(Equal(impl.NewEQBoard()))
+		})
+
+		It("should undo except 2", func() {
+			b := impl.NewEQBoard()
+			MustPlaceQueen(b, 7, 7)
+			MustPlaceQueen(b, 5, 6)
+			MustPlaceQueen(b, 6, 4)
+			MustPlaceQueen(b, 0, 3)
+
+			b.UndoPlaceQueen(5, 6)
+			b.UndoPlaceQueen(0, 3)
+
+			bn := impl.NewEQBoard()
+			MustPlaceQueen(bn, 6, 4)
+			MustPlaceQueen(bn, 7, 7)
+			Expect(b).To(Equal(bn))
+		})
+
 	})
 	Context("Eight-Queen helper functions", func() {
 		// Adjacent Points
@@ -98,6 +127,7 @@ var _ = Describe("Impl", func() {
 })
 
 func MustPlaceQueen(b impl.EQBoard, x, y int) {
+	Expect(b.CanPlaceQueen(x, y)).To(BeTrue())
 	b.PlaceQueen(x, y)
 	Expect(b.Board[y][x]).To(BeNumerically(">=", 1))
 	Expect(b.AttCol[y]).To(BeNumerically(">=", 1))
