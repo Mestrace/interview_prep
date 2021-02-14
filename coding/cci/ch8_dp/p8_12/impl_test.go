@@ -40,6 +40,7 @@ var _ = Describe("Impl", func() {
 		})
 	})
 	Context("Eight-Queen helper functions", func() {
+		// Adjacent Points
 		It("should compute the adjacent points of a single point", func() {
 			b := impl.Box{4, 4, 4, 4}
 			result := b.AdjPoints()
@@ -83,6 +84,15 @@ var _ = Describe("Impl", func() {
 				impl.Point{4, 8},
 				impl.Point{4, 7},
 			))
+		})
+		// Add Point
+		It("should add an existing point to the box", func() {
+			b := impl.Box{3, 5, 3, 5}
+			Expect(b.AddPoint(impl.Point{3, 4})).To(Equal(impl.Box{3, 5, 3, 5}))
+		})
+		It("should add an new point", func() {
+			b := impl.Box{3, 5, 3, 5}
+			Expect(b.AddPoint(impl.Point{6, 6})).To(Equal(impl.Box{3, 6, 3, 6}))
 		})
 	})
 })
