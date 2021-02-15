@@ -66,7 +66,6 @@ var _ = Describe("Impl", func() {
 			MustPlaceQueen(bn, 7, 7)
 			Expect(b).To(Equal(bn))
 		})
-
 	})
 	Context("Eight-Queen helper functions", func() {
 		// Adjacent Points
@@ -122,6 +121,14 @@ var _ = Describe("Impl", func() {
 		It("should add an new point", func() {
 			b := impl.Box{3, 5, 3, 5}
 			Expect(b.AddPoint(impl.Point{6, 6})).To(Equal(impl.Box{3, 6, 3, 6}))
+		})
+	})
+
+	Context("Solve Eight-Queen Problem", func() {
+		It("should work", func() {
+			b, ok := impl.SolveEightQueenDFS(4, 3)
+			Expect(ok).To(BeTrue())
+			impl.PrintBoard(b)
 		})
 	})
 })

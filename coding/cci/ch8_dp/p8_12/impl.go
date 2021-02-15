@@ -8,7 +8,11 @@ board.
 */
 package p8_12
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 type EQBoard struct {
 	Board        [][]int
@@ -37,7 +41,7 @@ func NewEQBoard() EQBoard {
 // checks Row, Column, Left Diagonal ( \ ), and Right Diagonal ( / ) for possible
 // attacks.
 func (b EQBoard) CanPlaceQueen(x, y int) bool {
-	if x >= len(b.Board[0]) || y > len(b.Board) {
+	if x < 0 || y < 0 || x >= len(b.Board[0]) || y >= len(b.Board) {
 		return false
 	} else if b.Board[y][x] > 0 {
 		return false
@@ -156,7 +160,13 @@ func (b Box) AddPoint(p Point) Box {
 	return b
 }
 
+// SolveEightQueenDFS solves the eight queen problem using DFS.
+func SolveEightQueenDFS(x, y int) (EQBoard, bool) {
+	return solveEightQueenDFS(NewEQBoard(), make([]Point, 0, 8), Box{x - 2, x + 2, y - 2, y + 2})
+}
+
 func solveEightQueenDFS(b EQBoard, moveSeq []Point, box Box) (EQBoard, bool) {
+	fmt.Printf("%+v\n", box)
 	// base case: if the bounding box Box{I, J, K, L} is larger than the size of
 	// the board, return the board and wheather the number of moves equals the
 	// size of the n-queen problem
@@ -168,8 +178,10 @@ func solveEightQueenDFS(b EQBoard, moveSeq []Point, box Box) (EQBoard, bool) {
 		if !b.CanPlaceQueen(p.X, p.Y) {
 			continue
 		}
+		fmt.Printf("\t%+v\n", p)
 		b.PlaceQueen(p.X, p.Y)
 		moveSeq = append(moveSeq, p)
+
 		if rb, ok := solveEightQueenDFS(b, moveSeq, box.AddPoint(p)); ok {
 			return rb, ok
 		}
@@ -178,4 +190,14 @@ func solveEightQueenDFS(b EQBoard, moveSeq []Point, box Box) (EQBoard, bool) {
 	}
 
 	return b, false
+}
+
+func PrintBoard(b EQBoard) {
+	for _, row := range b.Board {
+		rowStr := make([]string, len(row))
+		for i := range row {
+			rowStr[i] = fmt.Sprintf("%d", row[i])
+		}
+		fmt.Println(strings.Join(rowStr, " "))
+	}
 }
